@@ -6,7 +6,7 @@ from datetime import datetime
 import re
 import funcoes
 
-conexao = ProjetoFinanceiro.connect(host='localhost', database='banco_financeiro', user='root', password='2004')
+conexao = ProjetoFinanceiro.connect(host='localhost', database='banco_financeiro', user='root', password='Victor@12')
 
 cursor = conexao.cursor()
 acabar = False
@@ -57,22 +57,22 @@ while(acabar == False):
                                     valor_renda_mensal = 0
 
                                     comand = 'insert into tbl_renda_mensal (nome_renda_mensal, valor_renda_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Salario", salario, "1")
+                                    valores =	("Salario", salario, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
                                     comand = 'insert into tbl_renda_mensal (nome_renda_mensal, valor_renda_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Pensao", pensao, "1")
+                                    valores =	("Pensao", pensao, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
                                     comand = 'insert into tbl_renda_mensal (nome_renda_mensal, valor_renda_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Auxilio", auxilio, "1")
+                                    valores =	("Auxilio", auxilio, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
                                     comand = 'insert into tbl_renda_mensal (nome_renda_mensal, valor_renda_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Investimentos", investimentos, "1")
+                                    valores =	("Investimentos", investimentos, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
@@ -89,8 +89,8 @@ while(acabar == False):
                                                 desc_renda_mensal = str(input("\ninsira uma descrição dessa renda: "))
                                                 valor_renda_mensal = float(input("\nInsira quanto você recebe dessa renda: "))
                                                 
-                                                comand = 'insert into tbl_renda_mensal (nome_renda_mensal, desc_renda_mensal_, valor_renda_mensal, fk_id_usuario) values (%s, %s, %s, %s)'
-                                                valores =	(nome_renda_mensal, desc_renda_mensal, valor_renda_mensal, "1")
+                                                comand = 'insert into tbl_renda_mensal (nome_renda_mensal, desc_renda_mensal, valor_renda_mensal, fk_id_usuario) values (%s, %s, %s, %s)'
+                                                valores =	(nome_renda_mensal, desc_renda_mensal, valor_renda_mensal, registroFK_ID[0])
                                                 cursor.execute(comand, valores)
                                                 conexao.commit()
 
@@ -113,32 +113,32 @@ while(acabar == False):
                                     valor_despesa_mensal = 0
 
                                     comand = 'insert into tbl_despesa_mensal (nome_despesa_mensal, valor_despesa_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Aluguel", aluguel, "1")
+                                    valores =	("Aluguel", aluguel, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
                                     comand = 'insert into tbl_despesa_mensal (nome_despesa_mensal, valor_despesa_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Conta de luz", conta_de_luz, "1")
+                                    valores =	("Conta de luz", conta_de_luz, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
                                     comand = 'insert into tbl_despesa_mensal (nome_despesa_mensal, valor_despesa_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Conta de água", conta_de_agua, "1")
+                                    valores =	("Conta de água", conta_de_agua, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
                                     comand = 'insert into tbl_despesa_mensal (nome_despesa_mensal, valor_despesa_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Internet", internet, "1")
+                                    valores =	("Internet", internet, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
                                     comand = 'insert into tbl_despesa_mensal (nome_despesa_mensal, valor_despesa_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Mercado", mercado, "1")
+                                    valores =	("Mercado", mercado, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
                                     comand = 'insert into tbl_despesa_mensal (nome_despesa_mensal, valor_despesa_mensal, fk_id_usuario) values (%s, %s, %s)'
-                                    valores =	("Escola", escola, "1")
+                                    valores =	("Escola", escola, registroFK_ID[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
 
@@ -155,7 +155,7 @@ while(acabar == False):
                                                 valor_despesa_mensal = float(input("\nInsira quanto você paga despesa: "))
 
                                                 comand = 'insert into tbl_despesa_mensal (nome_despesa_mensal, desc_despesa_mensal_, valor_despesa_mensal, fk_id_usuario) values (%s, %s, %s, %s)'
-                                                valores =	(nome_despesa_mensal, desc_despesa_mensal, valor_despesa_mensal, "1")
+                                                valores =	(nome_despesa_mensal, desc_despesa_mensal, valor_despesa_mensal, registroFK_ID[0])
                                                 cursor.execute(comand, valores)
                                                 conexao.commit()
                                                 
@@ -169,8 +169,8 @@ while(acabar == False):
                                         nome_renda_alter = str(input("Digite o nome da renda que quer alterar: \n"))
                                         valor_renda_alter = float(input("Digite o novo valor dessa renda: \n"))
 
-                                        comand = 'UPDATE tbl_renda_mensal SET valor_renda_mensal = %s WHERE nome_renda_mensal = %s and fk_id_usuario = 1' 
-                                        valores = (valor_renda_alter, nome_renda_alter)
+                                        comand = 'UPDATE tbl_renda_mensal SET valor_renda_mensal = %s WHERE nome_renda_mensal = %s and fk_id_usuario = %s' 
+                                        valores = (valor_renda_alter, nome_renda_alter,registroFK_ID[0])
                                         cursor.execute(comand,valores)
                                         conexao.commit()
 
@@ -181,8 +181,8 @@ while(acabar == False):
                                         nome_despesa_alter = str(input("Digite o nome da despesa que quer alterar: \n"))
                                         valor_despesa_alter = float(input("Digite o novo valor dessa despesa: \n"))
 
-                                        comand = 'UPDATE tbl_despesa_mensal SET valor_despesa_mensal = %s WHERE nome_despesa_mensal = %s and fk_id_usuario = 1' 
-                                        valores = (valor_despesa_alter, nome_despesa_alter)
+                                        comand = 'UPDATE tbl_despesa_mensal SET valor_despesa_mensal = %s WHERE nome_despesa_mensal = %s and fk_id_usuario = %s' 
+                                        valores = (valor_despesa_alter, nome_despesa_alter,registroFK_ID[0])
                                         cursor.execute(comand,valores)
                                         conexao.commit()
 
@@ -192,8 +192,8 @@ while(acabar == False):
 
                                         nome_renda_delet = str(input("Digite o nome da renda que quer excluir: \n"))
 
-                                        comand = 'delete from tbl_renda_mensal WHERE nome_renda_mensal = %s and fk_id_usuario = 1' 
-                                        valores = (nome_renda_delet)
+                                        comand = 'delete from tbl_renda_mensal WHERE nome_renda_mensal = %s and fk_id_usuario = %s' 
+                                        valores = (nome_renda_delet,registroFK_ID[0])
                                         cursor.execute(comand,valores)
                                         conexao.commit()
 
@@ -203,8 +203,8 @@ while(acabar == False):
 
                                         nome_despesa_delet = str(input("Digite o nome da despesa que quer excluir: \n"))
 
-                                        comand = 'delete from tbl_despesa_mensal WHERE nome_despesa_mensal = %s and fk_id_usuario = 1' 
-                                        valores = (nome_despesa_delet)
+                                        comand = 'delete from tbl_despesa_mensal WHERE nome_despesa_mensal = %s and fk_id_usuario = %s' 
+                                        valores = (nome_despesa_delet,registroFK_ID[0])
                                         cursor.execute(comand,valores)
                                         conexao.commit()
 
