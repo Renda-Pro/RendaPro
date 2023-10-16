@@ -2,7 +2,7 @@ import mysql.connector as ProjetoFinanceiro
 import bcrypt
 import random
 import string
-from datetime import datetime
+from datetime import datetime,timedelta
 import re
 import funcoes
 
@@ -262,6 +262,87 @@ while(acabar == False):
                                             consulta_calendario = True
                                     except ValueError:
                                         print("FORMATO DE DATA INCORRETO. CERTIFIQUE-SE DE USAR O FORMATO 'DD/MM/AAAA'.")
+
+                            elif opition_menu == 4:
+                                option_cartao = int(input("QUAL OPÇÃO VOCÊ DESEJA?\n 1- CADASTRAR UM CARTÃO DE CRÉDITO\n 2-ADICIONAR COMPRA NO CARTÃO DE CRÉDITO"))
+                                if(option_cartao == 1):
+                                    print("\nCADASTRAR CARTÃO DE CRÉDITO\n")
+                                    nomecerto = False
+                                    limitecerto= False
+                                    datavencimentocerta = False
+                                    while(nomecerto ==False):
+                                        nome_cartao = input("NOME DO CARTÃO DE CRÉDITO: ")
+                                        cursor.execute("SELECT * FROM tbl_cartao_de_credito WHERE nome_cartao=%s", (nome_cartao,))
+                                        cartaonome = cursor.fetchone()
+                                        if(len(nome_cartao) >20):
+                                            print("\nNOME INVÁLIDO\n")
+                                        elif(cartaonome):
+                                            print("\nCARTÃO JÁ REGISTRADO NA NOSSA BASE DE DADOS\n")
+                                        else:
+                                            nomecerto = True
+                                    while(limitecerto == False):
+                                        try:
+                                            limite_cartao = float(input("QUAL O LIMITE DO SEU CARTÃO? "))
+                                            limitecerto = True
+                                        except ValueError:
+                                            print("\nVALOR INCORRETO\n")
+                                    while(datavencimentocerta == False):
+                                        try:
+                                            datavencimento = int(input("EM QUAL DIA VENCE O SEU CARTÃO? "))
+                                            if(datavencimento <1 or datavencimento>31):
+                                                print("DATA INVÁLIDA. (DIGITE DE 1 À 31)")
+                                            else:
+                                                datavencimentocerta = True
+                                        except ValueError:
+                                            print("DATA INVÁLIDA. (DIGITE DE 1 À 31)")
+                                    comand = 'INSERT INTO tbl_cartao_de_credito (nome_cartao,limite,fk_id_usuario) values (%s,%s,%s)'
+                                    valores = (nome_cartao,limite_cartao,registro[0])
+                                    cursor.execute(comand, valores)
+                                    cursor.execute("SELECT * FROM tbl_cartao_de_credito WHERE nome_cartao=%s", (nome_cartao,))
+                                    cartao = cursor.fetchone()
+                                   
+                                    
+                                    data_atual = datetime.now()
+
+                                    # Configure o dia desejado para o próximo mês
+                                    data_insercao = data_atual.replace(day=datavencimento)
+                                    meses_com_31 = {1, 3, 5, 7, 8, 10, 12}
+                                    if data_insercao.month in meses_com_31:
+                                            data_insercao + timedelta(days=31)
+                                    elif data_insercao.month == 2:
+                                        if (data_insercao.year % 4 == 0 and data_insercao.year % 100 != 0) or (data.year % 400 == 0):
+                                            data_insercao + timedelta(days=29)
+                                        else:
+                                            data_insercao + timedelta(days=28)
+                                    else:
+                                        data_insercao + timedelta(days=30)
+
+                                    
+            
+                                    # Crie uma lista para armazenar as datas dos próximos 6 meses com o dia especificado
+                                    datas_a_inserir = [data_insercao]
+
+                                    for i in range(12):
+                                        # Adicione 30 dias para cada mês subsequente
+                                        if data_insercao.month in meses_com_31:
+                                            data_insercao += timedelta(days=31)
+                                        elif data_insercao.month == 2:
+                                            if (data_insercao.year % 4 == 0 and data_insercao.year % 100 != 0) or (data.year % 400 == 0):
+                                                data_insercao += timedelta(days=29)
+                                            else:
+                                                data_insercao += timedelta(days=28)
+                                        else:
+                                            data_insercao += timedelta(days=30)
+                                        datas_a_inserir.append(data_insercao)
+
+
+                                    for data in datas_a_inserir:
+                                        comand = 'INSERT INTO tbl_pagamentos (desc_pagamento, valor_pagamento, data_vencimento_pagamento, fk_id_usuario,fk_id_cartao) VALUES (%s, %s, %s, %s,%s)'
+                                        valores = (nome_cartao, 0.0, data, registroFK_ID[0],cartao[0])  # Substitua os valores de descrição, valor e fk_id_usuario conforme necessário
+                                        cursor.execute(comand, valores)
+                                        conexao.commit()
+
+                            
                             
                         except ValueError:
                             print("ALGO DEU ERRADO\n")
