@@ -6,7 +6,7 @@ from datetime import datetime,timedelta
 import re
 import funcoes
 
-conexao = ProjetoFinanceiro.connect(host='localhost', database='banco_financeiro', user='root', password='Victor@12')
+conexao = ProjetoFinanceiro.connect(host='localhost', database='banco_financeiro', user='Pedro Paulo', password='john2004')
 
 cursor = conexao.cursor()
 acabar = False
@@ -217,7 +217,7 @@ while(acabar == False):
                                 while (valorcorreto ==False):
                                     try:
                                         saldo = float(input("VALOR DO BOLETO: R$ "))
-                                        if(saldo >= 0):
+                                        if(saldo > 0):
                                             valorcorreto = True
                                         else:
                                             print("SALDO INVÁLIDO")
@@ -283,7 +283,10 @@ while(acabar == False):
                                     while(limitecerto == False):
                                         try:
                                             limite_cartao = float(input("QUAL O LIMITE DO SEU CARTÃO? "))
-                                            limitecerto = True
+                                            if(limite_cartao >1):
+                                                limitecerto = True
+                                            else:
+                                                print("\nVALOR INCORRETO\n")
                                         except ValueError:
                                             print("\nVALOR INCORRETO\n")
                                     while(datavencimentocerta == False):
@@ -295,7 +298,7 @@ while(acabar == False):
                                                 datavencimentocerta = True
                                         except ValueError:
                                             print("DATA INVÁLIDA. (DIGITE DE 1 À 31)")
-                                    comand = 'INSERT INTO tbl_cartao_de_credito (nome_cartao,limite,fk_id_usuario) values (%s,%s,%s)'
+                                    comand = 'INSERT INTO tbl_cartao_de_credito (nome_cartao,limite,fk_id_usuario,cartaoativo) values (%s,%s,%s,true)'
                                     valores = (nome_cartao,limite_cartao,registro[0])
                                     cursor.execute(comand, valores)
                                     cursor.execute("SELECT * FROM tbl_cartao_de_credito WHERE nome_cartao=%s", (nome_cartao,))
@@ -341,9 +344,49 @@ while(acabar == False):
                                         valores = (nome_cartao, 0.0, data, registroFK_ID[0],cartao[0])  # Substitua os valores de descrição, valor e fk_id_usuario conforme necessário
                                         cursor.execute(comand, valores)
                                         conexao.commit()
+                                    print("CARTÃO DE CRÉDITO CADASTRADO COM SUCESSO!!\n")
+                                elif(option_cartao ==2):
+                                    nomecompracerto = False
+                                    valorcompracerto = False
+                                    parcelascompracerto = False
+                                    cartaoexistente = False
+                                    comand='SELECT * FROM tbl_cartao_de_credito where cartaoativo = true and fk_id_usuario = %s'
+                                    valores = (registroFK_ID[0],)
+                                    cursor.execute(comand, valores)
+                                    cartoes = cursor.fetchall()
+                                    count = 0
+                                    print("EM QUAL CARTÃO VOCÊ DESEJA ADICIONAR A COMPRA?\n")
+                                    while(len(cartoes) > count):
+                                        print(count+1,'- ',cartoes[count][1])
+                                        count +=1
+                                    escolha = int(input("Digite o número do cartão desejado: "))
+                                    if 1 <= escolha <= len(cartoes):
+                                        cartao_escolhido = cartoes[escolha - 1]
+                                        print("Você escolheu o cartão:", cartao_escolhido[0])
+                                    else:
+                                        print("Escolha inválida. Por favor, digite um número válido.")
+                                                                    
+                                    
+                                    while(nomecompracerto == False):
+                                        nome_compra = input("DESCRIÇÃO DA COMPRA: ")
+                                        if(len(nome_compra) < 300):
+                                            nomecompracerto = True
+                                        else:
+                                            print("\nDESCRIÇÃO INVÁLIDA\n")
+                                    while(valorcompracerto == False):
+                                        valor_compra = float(input("VALOR TOTAL DA COMPRA: "))
+                                        if(valor_compra > 0):
+                                            valorcompracerto = True
+                                        else:
+                                            print("\nVALOR INVÁLIDO\n")
+                                    while(parcelascompracerto == False):
+                                        parcelas = int(input("EM QUANTAS PARCELAS FOI DIVIDIDA A COMPRA? "))
+                                        if(parcelas > 0):
+                                            parcelascompracerto = True
+                                        else:
+                                            print("\nVALOR INVÁLIDO\n")
+                                    
 
-                            
-                            
                         except ValueError:
                             print("ALGO DEU ERRADO\n")
                 else:
