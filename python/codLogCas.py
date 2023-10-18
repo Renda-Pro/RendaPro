@@ -350,23 +350,25 @@ while(acabar == False):
                                     valorcompracerto = False
                                     parcelascompracerto = False
                                     cartaoexistente = False
-                                    comand='SELECT * FROM tbl_cartao_de_credito where cartaoativo = true and fk_id_usuario = %s'
-                                    valores = (registroFK_ID[0],)
-                                    cursor.execute(comand, valores)
-                                    cartoes = cursor.fetchall()
-                                    count = 0
-                                    print("EM QUAL CARTÃO VOCÊ DESEJA ADICIONAR A COMPRA?\n")
-                                    while(len(cartoes) > count):
-                                        print(count+1,'- ',cartoes[count][1])
-                                        count +=1
-                                    escolha = int(input("Digite o número do cartão desejado: "))
-                                    if 1 <= escolha <= len(cartoes):
-                                        cartao_escolhido = cartoes[escolha - 1]
-                                        print("Você escolheu o cartão:", cartao_escolhido[0])
-                                    else:
-                                        print("Escolha inválida. Por favor, digite um número válido.")
-                                                                    
-                                    
+                                    teste = True
+                                    while cartaoexistente == False:
+                                        comand='SELECT * FROM tbl_cartao_de_credito where cartaoativo = true and fk_id_usuario = %s'
+                                        valores = (registroFK_ID[0],)
+                                        cursor.execute(comand, valores)
+                                        cartoes = cursor.fetchall()
+                                        count = 0
+                                        print("EM QUAL CARTÃO VOCÊ DESEJA ADICIONAR A COMPRA?\n")
+                                        while(len(cartoes) > count):
+                                            print(count+1,'- ',cartoes[count][1])
+                                            count +=1
+                                        escolha = int(input("Digite o número do cartão desejado: "))
+                                        if 1 <= escolha <= len(cartoes):
+                                            cartao_escolhido = cartoes[escolha - 1]
+                                            print("Você escolheu o cartão:", cartao_escolhido[1])
+                                            cartaoexistente = True
+                                        else:
+                                            print("Escolha inválida. Por favor, digite um número válido.")
+
                                     while(nomecompracerto == False):
                                         nome_compra = input("DESCRIÇÃO DA COMPRA: ")
                                         if(len(nome_compra) < 300):
@@ -385,7 +387,18 @@ while(acabar == False):
                                             parcelascompracerto = True
                                         else:
                                             print("\nVALOR INVÁLIDO\n")
-                                    
+
+                                    comand="UPDATE tbl_pagamentos SET valor_pagamento = valor_pagamento + %s WHERE fk_id_cartao = %s AND data_vencimento_pagamento >= CURDATE() LIMIT %s"
+                                    valores = (valor_compra/parcelas,cartao_escolhido[0],parcelas)
+                                    cursor.execute(comand, valores)
+                                    conexao.commit()
+
+
+                                    comand="INSERT INTO tbl_compras_cartao (descricao_compra, valor_compra, data_registro_compra, parcelas, fk_id_cartao) VALUES (%s, %s, %s, %s,%s)"
+                                    valores = (nome_compra,valor_compra,datetime.now(),parcelas,cartao_escolhido[0])
+                                    cursor.execute(comand, valores)
+                                    conexao.commit()
+
 
                         except ValueError:
                             print("ALGO DEU ERRADO\n")
