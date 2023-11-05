@@ -6,7 +6,7 @@ from datetime import datetime,timedelta
 import re
 import funcoes
 
-conexao = ProjetoFinanceiro.connect(host='localhost', database='banco_financeiro', user='Pedro Paulo', password='john2004')
+conexao = ProjetoFinanceiro.connect(host='localhost', database='banco_financeiro', user='root', password='Victor@12')
 
 cursor = conexao.cursor()
 acabar = False
@@ -264,7 +264,7 @@ while(acabar == False):
                                         print("FORMATO DE DATA INCORRETO. CERTIFIQUE-SE DE USAR O FORMATO 'DD/MM/AAAA'.")
 
                             elif opition_menu == 4:
-                                option_cartao = int(input("QUAL OPÇÃO VOCÊ DESEJA?\n 1- CADASTRAR UM CARTÃO DE CRÉDITO\n 2-ADICIONAR COMPRA NO CARTÃO DE CRÉDITO"))
+                                option_cartao = int(input("QUAL OPÇÃO VOCÊ DESEJA?\n 1- CADASTRAR UM CARTÃO DE CRÉDITO\n 2-ADICIONAR COMPRA NO CARTÃO DE CRÉDITO\n 3- CONSULTAR CARTÕES"))
                                 if(option_cartao == 1):
                                     print("\nCADASTRAR CARTÃO DE CRÉDITO\n")
                                     nomecerto = False
@@ -350,7 +350,6 @@ while(acabar == False):
                                     valorcompracerto = False
                                     parcelascompracerto = False
                                     cartaoexistente = False
-                                    teste = True
                                     while cartaoexistente == False:
                                         comand='SELECT * FROM tbl_cartao_de_credito where cartaoativo = true and fk_id_usuario = %s'
                                         valores = (registroFK_ID[0],)
@@ -394,10 +393,49 @@ while(acabar == False):
                                     conexao.commit()
 
 
-                                    comand="INSERT INTO tbl_compras_cartao (descricao_compra, valor_compra, data_registro_compra, parcelas, fk_id_cartao) VALUES (%s, %s, %s, %s,%s)"
+                                    comand="INSERT INTO tbl_compras_cartoes (desc_pagamento, valor_compra, data_registro_compra, parcelas, fk_id_cartao) VALUES (%s, %s, %s, %s,%s)"
                                     valores = (nome_compra,valor_compra,datetime.now(),parcelas,cartao_escolhido[0])
                                     cursor.execute(comand, valores)
                                     conexao.commit()
+                                elif(option_cartao == 3):
+
+                                    cartaoexistente = False
+                                    while cartaoexistente == False:
+                                        comand='SELECT * FROM tbl_cartao_de_credito where cartaoativo = true and fk_id_usuario = %s'
+                                        valores = (registroFK_ID[0],)
+                                        cursor.execute(comand, valores)
+                                        cartoes = cursor.fetchall()
+                                        count = 0
+                                        print("EM QUAL CARTÃO VOCÊ DESEJA ADICIONAR A COMPRA?\n")
+                                        while(len(cartoes) > count):
+                                            print(count+1,'- ',cartoes[count][1])
+                                            count +=1
+                                        escolha = int(input("Digite o número do cartão desejado: "))
+                                        if 1 <= escolha <= len(cartoes):
+                                            cartao_escolhido = cartoes[escolha - 1]
+                                            print("Você escolheu o cartão:", cartao_escolhido[1])
+                                            cartaoexistente = True
+                                        else:
+                                            print("Escolha inválida. Por favor, digite um número válido.")
+                                    option_cartao2 = int(input("1- Consultar parcelas\n 2- Consultar compras"))
+                                    if(option_cartao2 == 1):
+                                        comand='SELECT * FROM tbl_pagamentos where fk_id_cartao = %s and fk_id_usuario = %s and valor_pagamento != 0'
+                                        valores = (cartao_escolhido[0],registroFK_ID[0],)
+                                        cursor.execute(comand, valores)
+                                        parcelas_cartao = cursor.fetchall()
+                                        for i in parcelas_cartao:
+                                            print("Data:",i[3].strftime("%d/%m/%Y"),"| Valor:",i[2],"| Limite Restante: ",cartao_escolhido[2]-i[2])
+                                    if(option_cartao2 ==2):
+                                        comand='SELECT * FROM tbl_compras_cartoes where fk_id_cartao = %s'
+                                        valores = (cartao_escolhido[0],)
+                                        cursor.execute(comand, valores)
+                                        compras_cartao = cursor.fetchall()
+                                        for i in compras_cartao:
+                                            print("Data e horário:",i[3].strftime("%d/%m/%Y %H:%M:%S"),"| Descrição:",i[4],"| Valor: ",i[1],"| Parcelas: ",i[2])
+
+
+
+                                
 
 
                         except ValueError:
